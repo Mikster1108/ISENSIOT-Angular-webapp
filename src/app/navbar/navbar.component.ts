@@ -20,7 +20,7 @@ export class NavbarComponent implements OnInit {
     },
     {
       display: 'Live Camera',
-      path: '/live'
+      path: '/live-camera'
     },
     {
       display: 'Skibidi',

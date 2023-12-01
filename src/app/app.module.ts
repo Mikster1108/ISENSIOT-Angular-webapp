@@ -6,13 +6,15 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { AppRoutingModule } from './app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RecordingsComponent } from './recordings/recordings.component';
+import { LiveCameraComponent } from './live-camera/live-camera.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     DashboardComponent,
-    RecordingsComponent
+    RecordingsComponent,
+    LiveCameraComponent
   ],
   imports: [
     BrowserModule,
