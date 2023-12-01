@@ -9,6 +9,8 @@ export class NavbarComponent implements OnInit {
 
   constructor() { }
 
+  expand: boolean = false;
+  loggedIn: boolean = false;
   navItems = [
     {
       display: 'Home',

@@ -7,6 +7,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RecordingsComponent } from './recordings/recordings.component';
 import { LiveCameraComponent } from './live-camera/live-camera.component';
+import { LoginPageComponent } from './login-page/login-page.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -14,12 +16,14 @@ import { LiveCameraComponent } from './live-camera/live-camera.component';
     NavbarComponent,
     DashboardComponent,
     RecordingsComponent,
-    LiveCameraComponent
+    LiveCameraComponent,
+    LoginPageComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
