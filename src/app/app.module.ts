@@ -7,8 +7,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RecordingsComponent } from './recordings/recordings.component';
 import { LiveCameraComponent } from './live-camera/live-camera.component';
-import { LoginPageComponent } from './login-page/login-page.component';
+import { LoginComponent } from './login/login.component';
 import {FormsModule} from "@angular/forms";
+import { ProfileComponent } from './profile/profile.component';
+import { RegisterComponent } from './register/register.component';
+import { ContentComponent } from './content/content.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +20,10 @@ import {FormsModule} from "@angular/forms";
     DashboardComponent,
     RecordingsComponent,
     LiveCameraComponent,
-    LoginPageComponent
+    LoginComponent,
+    ProfileComponent,
+    RegisterComponent,
+    ContentComponent
   ],
     imports: [
         BrowserModule,

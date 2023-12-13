@@ -25,8 +25,8 @@ export class NavbarComponent implements OnInit {
       path: '/live-camera'
     },
     {
-      display: 'Skibidi',
-      path: '/skoob'
+      display: 'Profile',
+      path: '/profile'
     }
   ];
 
