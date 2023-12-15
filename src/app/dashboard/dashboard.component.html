@@ -1,1 +1,19 @@
-<p>dashboard works!</p>
+<app-content>
+
+	<section>
+		<div>
+			<h1>Welcome to the security camera website!</h1>
+			<p>Insert explanation</p>
+		</div>
+	</section>
+
+	<section>
+		<div>
+			<h2>Most recent recordings</h2>
+		</div>
+		<div *ngFor="let url of videoUrls">
+			<app-video [videoUrl]="url"></app-video>
+		</div>
+	</section>
+
+</app-content>
