@@ -12,6 +12,10 @@ import {FormsModule} from "@angular/forms";
 import { ProfileComponent } from './profile/profile.component';
 import { RegisterComponent } from './register/register.component';
 import { ContentComponent } from './content/content.component';
+import { VideoComponent } from "./recordings/video/video-component";
+import { RouterModule } from "@angular/router";
+import {HttpClientModule} from "@angular/common/http";
+import {CommonModule} from "@angular/common";
 
 @NgModule({
   declarations: [
@@ -23,12 +27,16 @@ import { ContentComponent } from './content/content.component';
     LoginComponent,
     ProfileComponent,
     RegisterComponent,
-    ContentComponent
+    ContentComponent,
+    VideoComponent,
   ],
     imports: [
         BrowserModule,
+        RouterModule,
+        HttpClientModule,
         AppRoutingModule,
-        FormsModule
+        FormsModule,
+        CommonModule
     ],
   providers: [],
   bootstrap: [AppComponent]
