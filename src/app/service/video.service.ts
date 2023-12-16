@@ -2,8 +2,9 @@ import {HttpClient} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import {environment} from "../../environments/environment";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
+import {firstValueFrom} from "rxjs";
 
-const path = environment.apiUrl + '/video'
+const PATH = environment.apiUrl + '/video';
 
 @Injectable({
     providedIn: 'root'
@@ -13,19 +14,19 @@ export class VideoService {
     constructor(private http: HttpClient, private sanitizer: DomSanitizer) {
     }
 
-    getVideoLink(file: string) {
-        return this.http.get(path + '/?filename=' + file)
+    getVideoLink(filename: string) {
+        return this.http.get(`${PATH}/?filename=${filename}`)
     }
 
-    getAllVideoLinks() {
-        return this.http.get(path + '/all')
+    getAllVideoLinks(queryParam?: string, page: number = 1) {
+        return this.http.get(`${PATH}/all?filter=${queryParam}&page=${page}`)
     }
 
     getVideo(downloadUrl: string) {
-        return this.http.get(downloadUrl, { responseType: 'blob' }).toPromise();
+        return firstValueFrom(this.http.get(downloadUrl, { responseType: 'blob' }));
     }
 
-    convertVideoToBlobUrl(blob: Blob) {
+    convertVideoToBlobUrl(blob: Blob): string {
         return URL.createObjectURL(blob)
     }
 
@@ -33,28 +34,24 @@ export class VideoService {
         return this.sanitizer.bypassSecurityTrustResourceUrl(url);
     }
 
-    loadVideos(videoAmount: number, startIndex: number = 0, queryParam?: string, ): string[] {
+    loadVideos(videoFilenames: string[]): string[] {
         let videoUrls: string[] = [];
 
-        this.getAllVideoLinks().subscribe(
-            (allVideoData: any) => {
-                let itemUrls = allVideoData.items.slice(0, videoAmount);
-                for (let item of itemUrls) {
-                    this.getVideoLink(item).subscribe(
-                        (videoLinkData: any) => {
-                            let videoLink = videoLinkData.video_link
+        for(let videoFilename of videoFilenames) {
+            this.getVideoLink(videoFilename).subscribe(
+                (videoLinkData: any) => {
+                    let videoLink = videoLinkData.video_link
 
-                            this.getVideo(videoLink).then(blob => {
-                                if (blob) {
-                                    let blobUrl = this.convertVideoToBlobUrl(blob);
-                                    videoUrls.push(blobUrl);
-                                }
-                            });
+                    this.getVideo(videoLink).then(blob => {
+                        if (blob) {
+                            let blobUrl = this.convertVideoToBlobUrl(blob);
+                            videoUrls.push(blobUrl);
                         }
-                    )
+                    });
                 }
-            }
-        )
+            );
+        }
+
         return videoUrls
     }
 }
