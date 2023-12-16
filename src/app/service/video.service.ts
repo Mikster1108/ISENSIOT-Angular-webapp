@@ -2,7 +2,7 @@ import {HttpClient} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import {environment} from "../../environments/environment";
 import {DomSanitizer, SafeResourceUrl} from "@angular/platform-browser";
-import {firstValueFrom} from "rxjs";
+import {firstValueFrom, forkJoin} from "rxjs";
 
 const PATH = environment.apiUrl + '/video';
 
@@ -37,20 +37,32 @@ export class VideoService {
     loadVideos(videoFilenames: string[]): string[] {
         let videoUrls: string[] = [];
 
-        for(let videoFilename of videoFilenames) {
-            this.getVideoLink(videoFilename).subscribe(
-                (videoLinkData: any) => {
-                    let videoLink = videoLinkData.video_link
+        const videoObservables = videoFilenames.map(videoFilename => this.getVideoLink(videoFilename));
 
-                    this.getVideo(videoLink).then(blob => {
-                        if (blob) {
-                            let blobUrl = this.convertVideoToBlobUrl(blob);
-                            videoUrls.push(blobUrl);
-                        }
-                    });
+        // Combine video observables into one
+        forkJoin(videoObservables).subscribe((videoLinkDataArray: any[]) => {
+            const videoBlobPromises: Promise<Blob>[] = [];
+
+            // Get video link of each file and store it as a promise
+            for (const videoLinkData of videoLinkDataArray) {
+                const videoLink = videoLinkData.video_link;
+                videoBlobPromises.push(this.getVideo(videoLink));
+            }
+
+            // Wait before all promises are resolved, then convert videoBlobs to URLs
+            Promise.all(videoBlobPromises).then(videoBlobs => {
+                for (let videoBlob of videoBlobs) {
+                    if (videoBlob) {
+                        const blobUrl = this.convertVideoToBlobUrl(videoBlob);
+                        videoUrls.push(blobUrl);
+                    } else {
+                        videoUrls.push('')
+                    }
                 }
-            );
-        }
+            });
+        }, error => {
+
+        });
 
         return videoUrls
     }
