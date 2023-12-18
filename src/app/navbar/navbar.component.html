@@ -1,4 +1,4 @@
-<header *ngIf="true" class="bg-gray-800">
+<header *ngIf="loggedIn" class="bg-gray-800">
 
   <!-- desktop navbar-->
   <section class="hidden md:flex mx-auto py-4 px-4 container">
@@ -9,7 +9,11 @@
         class="mx-6 font-bold text-white hover:text-gray-500 transition text-lg"
         [routerLinkActive]="['active']"
       >{{ navItem.display }}</a>
+      <a class="mx-6 font-bold text-white hover:text-gray-500 transition text-lg cursor-pointer" (click)="logout()">
+        Logout
+      </a>
     </nav>
+
   </section>
 
   <section class="md:hidden">

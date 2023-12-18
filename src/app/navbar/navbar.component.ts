@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {TokenStorageService} from "../service/token.service";
 
 @Component({
   selector: 'app-navbar',
@@ -7,10 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavbarComponent implements OnInit {
 
-  constructor() { }
+  constructor(private tokenStorageService: TokenStorageService) { }
 
   expand: boolean = false;
   loggedIn: boolean = false;
+
   navItems = [
     {
       display: 'Home',
@@ -27,10 +29,16 @@ export class NavbarComponent implements OnInit {
     {
       display: 'Profile',
       path: '/profile'
-    }
+    },
   ];
 
   ngOnInit(): void {
+    this.loggedIn = !!this.tokenStorageService.getToken();
+  }
+
+  logout(): void {
+    this.tokenStorageService.signOut();
+    window.location.reload();
   }
 
 }
