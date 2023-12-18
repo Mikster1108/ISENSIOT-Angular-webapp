@@ -1,1 +1,102 @@
-<p>register works!</p>
+<div class="flex h-screen">
+	<div class="flex flex-col sm:justify-center items-center pt-6 w-full sm:pt-0 m-auto">
+
+		<div class="w-full sm:max-w-md mt-6 px-6 py-4 shadow-lg overflow-hidden sm:rounded-lg bg-gray-700">
+			<form
+					*ngIf="!isSuccessful"
+					name="form"
+					(ngSubmit)="f.form.valid && onSubmit()"
+          #f="ngForm"
+					novalidate>
+
+				<!-- Email Address -->
+				<div class="mt-4">
+					<label for="email" class="block font-medium text-sm text-gray-200">Email</label>
+
+					<input id="email"
+								 class="block mt-1 w-full p-1 rounded-md focus:ring-0 bg-gray-200 shadow-sm text-gray-900"
+								 type="email"
+								 name="email"
+								 (ngModelChange)="resetErrorVariables()"
+								 [(ngModel)]="form.email"
+								 [required]="true"
+                 #email="ngModel">
+					<div
+							class="text-red-400 p-2"
+							*ngIf="email.errors && f.submitted">
+						Please enter a valid email
+					</div>
+
+				</div>
+
+				<!-- Password -->
+				<div class="mt-4">
+					<div class="flex">
+						<label for="password" class="block font-medium text-sm text-gray-200">Password</label>
+
+					</div>
+
+					<input id="password"
+								 class="block mt-1 w-full p-1 rounded-md focus:ring-0 bg-gray-200 shadow-sm text-gray-900"
+								 type="password"
+								 name="password"
+								 (ngModelChange)="resetErrorVariables()"
+								 [(ngModel)]="form.password"
+								 [required]="true"
+								 [minlength]="5"
+                 #password="ngModel">
+					<div
+							class="text-red-400 p-2"
+							*ngIf="password.errors && f.submitted">
+						<div *ngIf="password.errors['required']">
+							A password is required
+						</div>
+						<div *ngIf="password.errors['minlength']">
+							Password needs to be at least 5 characters long
+						</div>
+					</div>
+				</div>
+
+				<!-- Access code -->
+				<div class="mt-4">
+					<div class="flex">
+						<label for="access_code" class="block font-medium text-sm text-gray-200">Access code</label>
+					</div>
+
+					<input
+						id="access_code"
+						class="block mt-1 w-full p-1 rounded-md focus:ring-0 bg-gray-200 shadow-sm text-gray-900"
+						type="text"
+						name="access_code"
+						(ngModelChange)="resetErrorVariables()"
+						[(ngModel)]="form.access_code"
+						[required]="true"
+						#access_code="ngModel">
+					<div
+							class="text-red-400 p-2"
+							*ngIf="access_code.errors && f.submitted">
+						<div *ngIf="access_code.errors['required']">The access code is required</div>
+					</div>
+				</div>
+
+				<!-- Register -->
+				<div class="flex mt-4">
+					<a class="text-sm text-gray-100 hover:text-gray-400 transition duration-150 ease-in-out my-auto underline"
+						 href="login">
+						Already have an account?
+					</a>
+
+					<button
+							class="ml-auto inline-flex items-center px-4 py-2 border bg-gray-600 rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-800 transition ease-in-out duration-150">
+						REGISTER
+					</button>
+				</div>
+				<div class="text-red-400 p-2" *ngIf="f.submitted && isSuccessful === false">
+					<div *ngIf="errorStatusCode === 400">
+						{{errorMessage}}
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
