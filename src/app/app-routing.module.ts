@@ -5,14 +5,17 @@ import { RecordingsComponent } from "./recordings/recordings.component";
 import {LiveCameraComponent} from "./live-camera/live-camera.component";
 import {LoginComponent} from "./login/login.component";
 import {ProfileComponent} from "./profile/profile.component";
+import {AuthGuard} from "./helpers/auth.guard";
+import {RegisterComponent} from "./register/register.component";
 
 const routes: Routes = [
   {path: '', redirectTo: 'home', pathMatch: 'full'},
-  {path: 'home', component: DashboardComponent },
-  {path: 'recordings', component: RecordingsComponent },
-  {path: 'live-camera', component: LiveCameraComponent },
+  {path: 'home', component: DashboardComponent, canActivate: [AuthGuard] },
+  {path: 'recordings', component: RecordingsComponent, canActivate: [AuthGuard] },
+  {path: 'live-camera', component: LiveCameraComponent, canActivate: [AuthGuard] },
+  {path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]},
   {path: 'login', component: LoginComponent },
-  {path: 'profile', component: ProfileComponent},
+  {path: 'register', component: RegisterComponent},
   {path: '**', redirectTo: 'home'}
 ];
 

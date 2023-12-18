@@ -16,6 +16,8 @@ import { VideoComponent } from "./recordings/video/video-component";
 import { RouterModule } from "@angular/router";
 import {HttpClientModule} from "@angular/common/http";
 import {CommonModule} from "@angular/common";
+import {authInterceptorProviders} from "./helpers/auth.interceptor";
+import { ErrorDisplayComponent } from './error-display/error-display.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +31,7 @@ import {CommonModule} from "@angular/common";
     RegisterComponent,
     ContentComponent,
     VideoComponent,
+    ErrorDisplayComponent,
   ],
     imports: [
         BrowserModule,
@@ -38,7 +41,7 @@ import {CommonModule} from "@angular/common";
         FormsModule,
         CommonModule
     ],
-  providers: [],
+  providers: [authInterceptorProviders],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
