@@ -24,8 +24,8 @@ export class AuthService {
     }, httpOptions);
   }
 
-  register(name: string, email: string, password: string, accessCode: string) {
-    return this.http.post(BASE_PATH + '/register', {
+  register(email: string, password: string, accessCode: string) {
+    return this.http.post(BASE_PATH + '/user/register', {
       email,
       password: password,
       access_code: accessCode
