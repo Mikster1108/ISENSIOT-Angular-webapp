@@ -36,9 +36,7 @@
 	</section>
 
 	<section *ngIf="showErrorMessage">
-		<div class="bg-red-100 rounded-lg py-5 px-6 mb-4 text-base text-red-700 mb-3 mt-10">
-			Failed to load in any videos, the server may be down at the moment.
-		</div>
+		<app-error-display [errorMessage]="'Failed to load in any videos, the server may be down at the moment.'"></app-error-display>
 	</section>
 
 </app-content>
