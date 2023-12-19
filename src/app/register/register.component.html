@@ -93,7 +93,13 @@
 				</div>
 				<div class="text-red-400 p-2" *ngIf="f.submitted && isSuccessful === false">
 					<div *ngIf="errorStatusCode === 400">
-						{{errorMessage}}
+						<app-error-display [errorMessage]="errorMessage"></app-error-display>
+					</div>
+					<div *ngIf="errorStatusCode === 429">
+						<app-error-display [errorMessage]="'Too many attempts, try again later'"></app-error-display>
+					</div>
+					<div class="text-red-400 p-2" *ngIf="errorStatusCode === 0">
+						<app-error-display [errorMessage]="'Server is not responding'"></app-error-display>
 					</div>
 				</div>
 			</form>

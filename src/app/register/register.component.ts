@@ -41,6 +41,10 @@ export class RegisterComponent implements OnInit {
           this.isSuccessful = false;
           this.errorStatusCode = err.status;
           this.errorMessage = err.error.error;
+
+          if (!this.errorStatusCode) {
+            this.errorStatusCode = 0;
+          }
         }
     );
   }

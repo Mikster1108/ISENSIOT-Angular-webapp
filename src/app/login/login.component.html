@@ -18,6 +18,7 @@
                  class="block mt-1 w-full p-1 rounded-md focus:ring-0 bg-gray-200 shadow-sm text-gray-900"
                  type="email"
                  name="email"
+                 (ngModelChange)="resetErrorStatusCode()"
                  [(ngModel)]="form.email"
                  [required]="true"
                  #email="ngModel">
@@ -40,6 +41,7 @@
                  class="block mt-1 w-full p-1 rounded-md focus:ring-0 bg-gray-200 shadow-sm text-gray-900"
                  type="password"
                  name="password"
+                 (ngModelChange)="resetErrorStatusCode()"
                  [(ngModel)]="form.password"
                  [required]="true"
                  #password="ngModel">
@@ -62,50 +64,27 @@
             LOGIN
           </button>
         </div>
-        <div class="text-red-400 p-2" *ngIf="f.submitted && errorStatusCode">
+        <div class="text-red-400 p-2" *ngIf="f.submitted && errorStatusCode; else serverErrorBlock">
+          <div *ngIf="errorStatusCode === 400">
+            <app-error-display [errorMessage]="'Invalid password'"></app-error-display>
+          </div>
           <div *ngIf="errorStatusCode === 401">
             <app-error-display [errorMessage]="'Invalid credentials'"></app-error-display>
           </div>
-          <div *ngIf="errorStatusCode === 400">
+          <div *ngIf="errorStatusCode === 404">
             <app-error-display [errorMessage]="'No user with that email exists'"></app-error-display>
           </div>
+          <div *ngIf="errorStatusCode === 429">
+            <app-error-display [errorMessage]="'Too many attempts, try again later'"></app-error-display>
+          </div>
         </div>
+        <ng-template #serverErrorBlock>
+          <div *ngIf="errorStatusCode === 0">
+            <app-error-display [errorMessage]="'Server is not responding'"></app-error-display>
+          </div>
+        </ng-template>
       </form>
     </div>
   </div>
 </div>
 
-
-<!--<section>-->
-<!--  <form>-->
-<!--    <label for="email" class="block text-sm text-black">Email</label>-->
-<!--    <input id="email"-->
-<!--           class="block border-2 border-black"-->
-<!--           type="email"-->
-<!--           name="email"-->
-<!--           [(ngModel)]="form.email"-->
-<!--           (ngModelChange)="resetErrorStatusCode()"-->
-<!--    >-->
-
-<!--    <label for="password" class="block text-sm text-black">Password</label>-->
-<!--    <input id="password"-->
-<!--           class="block border-2 border-black"-->
-<!--           type="password"-->
-<!--           name="password"-->
-<!--           [(ngModel)]="form.password"-->
-<!--           (ngModelChange)="resetErrorStatusCode()"-->
-<!--    >-->
-<!--  </form>-->
-
-<!--  <a class="text-sm hover:text-gray-400 transition duration-150 ease-in-out my-auto underline"-->
-<!--      href="register">-->
-<!--  No account?-->
-<!--  </a>-->
-
-<!--  <button-->
-<!--      class="ml-auto inline-flex items-center px-4 py-2 border bg-gray-600 rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-800 transition ease-in-out duration-150"-->
-<!--      (click)="onSubmit()">-->
-<!--    LOGIN-->
-<!--  </button>-->
-
-<!--</section>-->

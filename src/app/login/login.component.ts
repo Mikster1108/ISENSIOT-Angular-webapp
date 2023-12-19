@@ -42,13 +42,16 @@ export class LoginComponent implements OnInit {
         }, err => {
           this.isLoggedIn = false;
             this.errorStatusCode = err.status;
+
+            if (!this.errorStatusCode) {
+              this.errorStatusCode = 0;
+            }
           }
     );
   }
 
   resetErrorStatusCode() {
     this.errorStatusCode = undefined;
-    console.log(this.errorStatusCode)
   }
 
 }
