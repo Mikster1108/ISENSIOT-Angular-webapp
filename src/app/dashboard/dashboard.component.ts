@@ -11,6 +11,7 @@ export class DashboardComponent implements OnInit{
 
   videoUrls: string[] = [];
   showErrorMessage: boolean = false;
+  noVideosAvailable: boolean = false;
 
   constructor(private videoService: VideoService) { }
 
@@ -22,6 +23,8 @@ export class DashboardComponent implements OnInit{
           items = items.splice(0, VIDEO_DISPLAY_AMOUNT);
 
           this.videoUrls = this.videoService.loadVideos(items);
+
+          this.noVideosAvailable = items.length > 0;
         }, error => {
           this.showErrorMessage = true;
         }
