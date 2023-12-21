@@ -25,7 +25,7 @@
 	</section>
 
 	<section class="md:w-full px-4 py-12 md:shadow-2xl rounded-2xl border border-cyan-700 border-4" *ngIf="!showErrorMessage">
-		<div class="mb-16 text-center" *ngIf="noVideosAvailable; else noVideosAvailableMessage">
+		<div class="mb-16 text-center">
 			<h2 class="font-semibold text-2xl">Watch the most recent recordings</h2>
 		</div>
 		<div class="flex flex-col md:flex-row justify-center">
@@ -33,9 +33,6 @@
 				<app-video [videoUrl]="url"></app-video>
 			</div>
 		</div>
-		<ng-template #noVideosAvailableMessage class="mb-16 text-center">
-			<h2 class="font-semibold text-2xl">No videos available</h2>
-		</ng-template>
 	</section>
 
 	<section *ngIf="showErrorMessage">
