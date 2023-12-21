@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -18,6 +17,11 @@ import {HttpClientModule} from "@angular/common/http";
 import {CommonModule} from "@angular/common";
 import {authInterceptorProviders} from "./helpers/auth.interceptor";
 import { ErrorDisplayComponent } from './error-display/error-display.component';
+import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
+import {environment} from "../environments/environment";
+
+const socketUrl = environment.apiUrl;
+const socketConfig: SocketIoConfig = { url: socketUrl, options: {autoConnect: false, transports: ['websocket']}};
 
 @NgModule({
   declarations: [
@@ -39,7 +43,8 @@ import { ErrorDisplayComponent } from './error-display/error-display.component';
         HttpClientModule,
         AppRoutingModule,
         FormsModule,
-        CommonModule
+        CommonModule,
+        SocketIoModule.forRoot(socketConfig)
     ],
   providers: [authInterceptorProviders],
   bootstrap: [AppComponent]
