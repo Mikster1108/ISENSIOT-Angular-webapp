@@ -1,4 +1,13 @@
 <p>live-camera works!</p>
 <button class="p-2 bg-green-400 hover:bg-green-600" (click)="connect()">Connect</button>
 <button class="p-2 bg-green-400 hover:bg-green-600" (click)="disconnect()">Disconnect</button>
-<button class="p-2 bg-green-400 hover:bg-green-600" (click)="sendMessage('please work')">Get message</button>
+<button class="p-2 bg-green-400 hover:bg-green-600" (click)="sendMessage('please work')">Send message</button>
+
+<div *ngIf="connected">
+	<p>Connected!</p>
+</div>
+
+<div *ngIf="connected === false">
+	<p>Disconnected!</p>
+</div>
+

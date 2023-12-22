@@ -7,10 +7,13 @@ import {SocketService} from "../service/socket.service";
 })
 export class LiveCameraComponent implements OnInit, OnDestroy {
 
+  connected: boolean | undefined;
+  responseMessage: string | undefined;
+
   constructor(private socketService: SocketService) { }
 
   ngOnInit(): void {
-
+    this.listenForResponse()
   }
 
   ngOnDestroy() {
@@ -18,11 +21,19 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   }
 
   connect() {
-    this.socketService.connectToNamespace('/test');
+    this.socketService.connect().subscribe((response: any) => {
+      if(response.data) {
+        this.connected = true;
+      }
+    }, error => {
+      this.connected = false;
+        }
+    );
   }
 
   disconnect() {
     this.socketService.disconnect();
+    this.connected = false;
   }
 
   sendMessage(message: string): void {
@@ -31,7 +42,7 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
 
   listenForResponse(): void {
     this.socketService.onMessage().subscribe((response: any) => {
-      console.log('Response received:', response);
+      this.responseMessage = response.data;
     });
   }
 

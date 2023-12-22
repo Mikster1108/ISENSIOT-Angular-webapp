@@ -21,7 +21,7 @@ import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import {environment} from "../environments/environment";
 
 const socketUrl = environment.apiUrl;
-const socketConfig: SocketIoConfig = { url: socketUrl, options: {autoConnect: false, transports: ['websocket']}};
+const socketConfig: SocketIoConfig = { url: socketUrl, options: {autoConnect: false, transports: ['websocket'], reconnectionAttempts: 0}};
 
 @NgModule({
   declarations: [

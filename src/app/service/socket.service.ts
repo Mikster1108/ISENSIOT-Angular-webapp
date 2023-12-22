@@ -9,9 +9,10 @@ export class SocketService {
 
   constructor(private socket: Socket) { }
 
-  connectToNamespace(namespace: string): void {
-    this.socket.ioSocket.io.uri = `${this.socket.ioSocket.io.uri}${namespace}`;
+  connect() {
     this.socket.connect();
+
+    return this.socket.fromEvent('message');
   }
 
   disconnect() {
