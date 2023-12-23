@@ -1,5 +1,6 @@
 import { Socket } from 'ngx-socket-io';
 import {Injectable} from "@angular/core";
+import {Observable} from "rxjs";
 
 
 @Injectable({
@@ -12,7 +13,7 @@ export class SocketService {
   connect() {
     this.socket.connect();
 
-    return this.socket.fromEvent('message');
+    return this.socket.fromEvent('response');
   }
 
   disconnect() {
@@ -25,5 +26,21 @@ export class SocketService {
 
   onMessage(): any {
     return this.socket.fromEvent('response');
+  }
+
+  startStream(): void {
+    this.socket.emit('start-stream');
+  }
+
+  stopStream(): void {
+    this.socket.emit('stop-stream');
+  }
+
+  getFrame(): Observable<any> {
+    return new Observable((observer) => {
+      this.socket.on('frame', (data: any) => {
+        observer.next(data);
+      });
+    });
   }
 }

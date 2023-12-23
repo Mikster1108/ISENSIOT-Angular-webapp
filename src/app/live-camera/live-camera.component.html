@@ -2,6 +2,8 @@
 <button class="p-2 bg-green-400 hover:bg-green-600" (click)="connect()">Connect</button>
 <button class="p-2 bg-green-400 hover:bg-green-600" (click)="disconnect()">Disconnect</button>
 <button class="p-2 bg-green-400 hover:bg-green-600" (click)="sendMessage('please work')">Send message</button>
+<button class="p-2 bg-green-400 hover:bg-green-600" (click)="startStream()">Watch stream</button>
+<button class="p-2 bg-green-400 hover:bg-green-600" (click)="stopStream()">Stop stream</button>
 
 <div *ngIf="connected">
 	<p>Connected!</p>
@@ -9,5 +11,9 @@
 
 <div *ngIf="connected === false">
 	<p>Disconnected!</p>
+</div>
+
+<div *ngIf="streamStarted">
+	<app-camera-frame></app-camera-frame>
 </div>
 

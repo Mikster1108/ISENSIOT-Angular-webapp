@@ -19,9 +19,10 @@ import {authInterceptorProviders} from "./helpers/auth.interceptor";
 import { ErrorDisplayComponent } from './error-display/error-display.component';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import {environment} from "../environments/environment";
+import {CameraFrameComponent} from "./live-camera/camera-frame/camera-frame.component";
 
 const socketUrl = environment.apiUrl;
-const socketConfig: SocketIoConfig = { url: socketUrl, options: {autoConnect: false, transports: ['websocket'], reconnectionAttempts: 0}};
+const socketConfig: SocketIoConfig = { url: socketUrl, options: {autoConnect: false, transports: ['websocket'], reconnection: false}};
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ const socketConfig: SocketIoConfig = { url: socketUrl, options: {autoConnect: fa
     ContentComponent,
     VideoComponent,
     ErrorDisplayComponent,
+    CameraFrameComponent,
   ],
     imports: [
         BrowserModule,

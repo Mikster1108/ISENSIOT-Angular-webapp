@@ -9,6 +9,7 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
 
   connected: boolean | undefined;
   responseMessage: string | undefined;
+  streamStarted: boolean = false;
 
   constructor(private socketService: SocketService) { }
 
@@ -17,6 +18,7 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.socketService.stopStream();
     this.socketService.disconnect();
   }
 
@@ -34,6 +36,7 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   disconnect() {
     this.socketService.disconnect();
     this.connected = false;
+    this.streamStarted = false;
   }
 
   sendMessage(message: string): void {
@@ -44,6 +47,15 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
     this.socketService.onMessage().subscribe((response: any) => {
       this.responseMessage = response.data;
     });
+  }
+
+  startStream(): void {
+    this.socketService.startStream();
+    this.streamStarted = true;
+  }
+
+  stopStream(): void {
+    this.socketService.stopStream();
   }
 
 }
