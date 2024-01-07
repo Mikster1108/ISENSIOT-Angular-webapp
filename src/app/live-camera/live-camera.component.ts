@@ -8,17 +8,12 @@ import {Observable} from "rxjs";
 })
 export class LiveCameraComponent implements OnInit, OnDestroy {
 
-  connected: boolean = false
   responseMessage: string | undefined;
   streamStarted: boolean = false;
 
   constructor(private socketService: SocketService) { }
 
   ngOnInit(): void {
-    this.connect().subscribe(() => {}, error => {
-      this.responseMessage = 'Connection to server failed!';
-      this.connected = true;
-    });
   }
 
   ngOnDestroy() {
@@ -32,11 +27,12 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   disconnect(): void {
     this.socketService.disconnect();
     this.streamStarted = false;
-    this.connected = false;
   }
 
   startWatchingStream(): void {
-    this.initStream();
+    this.connect().subscribe(() => {
+      this.initStream();
+    });
   }
 
   stopWatchingStream(): void {
@@ -49,15 +45,9 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   initStream(): void {
     this.responseMessage = 'Waiting for server response...';
     this.streamStarted = true;
-    this.socketService.startStream().subscribe((response: any) => {
-          if (response.data) {
-            this.responseMessage = 'Loading stream...'
-          }
-        }, error => {
-          this.streamStarted = false;
-          this.responseMessage = 'Failed to fetch the stream!'
-        }
-    );
+    this.socketService.startStream().subscribe(() => {
+      this.responseMessage = 'Loading stream...'
+    });
   }
 
   handleStreamCrash(): void {

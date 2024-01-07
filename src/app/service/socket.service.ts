@@ -10,30 +10,20 @@ export class SocketService {
 
   constructor(private socket: Socket) { }
 
-  connect() {
+  connect(): Observable<any> {
     this.socket.connect();
 
-    return this.socket.fromEvent('response');
+    return this.socket.fromEvent('connect_response');
   }
 
-  disconnect() {
+  disconnect(): void {
     this.socket.disconnect();
   }
 
-  sendMessage(message: string): void {
-    this.socket.emit('message', message);
-  }
-
-  onMessage(): any {
-    return this.socket.fromEvent('response');
-  }
-
-  startStream(): void {
+  startStream(): Observable<any> {
     this.socket.emit('start-stream');
-  }
 
-  stopStream(): void {
-    this.socket.emit('stop-stream');
+    return this.socket.fromEvent('start_stream_response');
   }
 
   getFrame(): Observable<any> {
