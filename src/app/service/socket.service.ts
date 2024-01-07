@@ -1,6 +1,6 @@
-import { Socket } from 'ngx-socket-io';
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs";
+import {LivestreamSocket} from "../model/livestream-socket";
 
 
 @Injectable({
@@ -8,10 +8,10 @@ import {Observable} from "rxjs";
 })
 export class SocketService {
 
-  constructor(private socket: Socket) { }
+  constructor(private socket: LivestreamSocket) { }
 
   connect(): Observable<any> {
-    this.socket.connect();
+    this.socket.connect()
 
     return this.socket.fromEvent('connect_response');
   }

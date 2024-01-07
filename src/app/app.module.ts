@@ -17,12 +17,8 @@ import {HttpClientModule} from "@angular/common/http";
 import {CommonModule} from "@angular/common";
 import {authInterceptorProviders} from "./helpers/auth.interceptor";
 import { ErrorDisplayComponent } from './error-display/error-display.component';
-import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
-import {environment} from "../environments/environment";
 import {CameraFrameComponent} from "./live-camera/camera-frame/camera-frame.component";
 
-const socketUrl = environment.apiUrl;
-const socketConfig: SocketIoConfig = { url: socketUrl, options: {autoConnect: false, transports: ['websocket'], reconnection: false}};
 
 @NgModule({
   declarations: [
@@ -45,8 +41,7 @@ const socketConfig: SocketIoConfig = { url: socketUrl, options: {autoConnect: fa
         HttpClientModule,
         AppRoutingModule,
         FormsModule,
-        CommonModule,
-        SocketIoModule.forRoot(socketConfig)
+        CommonModule
     ],
   providers: [authInterceptorProviders],
   bootstrap: [AppComponent]
