@@ -1,6 +1,7 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {SocketService} from "../service/socket.service";
 import {Observable} from "rxjs";
+import {CameraFrameComponent} from "./camera-frame/camera-frame.component";
 
 @Component({
   selector: 'app-live-camera',
@@ -8,8 +9,14 @@ import {Observable} from "rxjs";
 })
 export class LiveCameraComponent implements OnInit, OnDestroy {
 
-  responseMessage: string | undefined;
+  @ViewChild(CameraFrameComponent) cameraFrameComponent!: CameraFrameComponent;
+
+  statusMessage: string | undefined;
+  streamErrorMessage: string | undefined;
+
+  paused: boolean = false;
   streamStarted: boolean = false;
+  // streamTimeoutId: NodeJS.Timeout | undefined;
 
   constructor(private socketService: SocketService) { }
 
@@ -36,22 +43,57 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   }
 
   stopWatchingStream(): void {
-    this.responseMessage = 'Exiting stream...';
+    this.statusMessage = 'Exiting stream...';
     this.streamStarted = false;
-    this.responseMessage = undefined;
+    this.statusMessage = undefined;
     this.disconnect();
   }
 
+  togglePause(): void {
+    this.paused = !this.paused;
+    if (this.paused) {
+      this.cameraFrameComponent.pauseFrameData();
+      this.cameraFrameComponent.stopObservingFrameData();
+    }
+    else if (!this.paused) {
+      this.cameraFrameComponent.watchFrameData();
+      this.cameraFrameComponent.startObservingFrameData();
+    }
+  }
+
   initStream(): void {
-    this.responseMessage = 'Waiting for server response...';
-    this.streamStarted = true;
+    this.statusMessage = 'Waiting for server response...';
     this.socketService.startStream().subscribe(() => {
-      this.responseMessage = 'Loading stream...'
+      this.streamStarted = true;
+      this.statusMessage = 'Loading stream...'
     });
   }
 
+  // private startObservingStreamResponse(): void {
+  //   let lastValue = this.cameraFrameComponent.getFrameData();
+  //
+  //   this.streamTimeoutId = setInterval(() => {
+  //     if (this.cameraFrameComponent.getFrameData() && this.cameraFrameComponent.getFrameData() === lastValue) {
+  //       this.streamErrorMessage = 'Failed to load stream, if it does not show up after a while reload the page.'
+  //     }
+  //     else if (this.cameraFrameComponent.getFrameData()) {
+  //       this.statusMessage = undefined;
+  //     }
+  //     else {
+  //       lastValue = this.cameraFrameComponent.getFrameData();
+  //     }
+  //   }, 8000);
+  // }
+  //
+  // private stopObservingFrameData()  {
+  //   if (this.streamTimeoutId) {
+  //     clearInterval(this.streamTimeoutId)
+  //   }
+  //   this.streamTimeoutId = undefined;
+  // }
+
   handleStreamCrash(): void {
-    this.responseMessage = 'Connection to stream was broken!'
+    this.streamErrorMessage = 'Connection to stream was broken!'
     this.streamStarted = false;
   }
 

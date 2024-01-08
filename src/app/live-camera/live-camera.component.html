@@ -1,8 +1,19 @@
 <app-content>
-	<button class="p-2 bg-cyan-300 hover:bg-cyan-600 rounded-lg disabled:bg-cyan-100" (click)="startWatchingStream()" [disabled]="!!streamStarted">Watch stream</button>
+	<button class="p-2 bg-cyan-300 hover:bg-cyan-600 rounded-lg disabled:bg-cyan-100"
+					(click)="startWatchingStream()"
+					[disabled]="!!streamStarted">Watch stream
+	</button>
 	<button class="p-2 bg-cyan-300 hover:bg-cyan-600 rounded-lg" (click)="stopWatchingStream()">Stop watching stream</button>
+	<button class="p-2 bg-cyan-300 hover:bg-cyan-600 rounded-lg" (click)="togglePause()">Pause stream</button>
 
-	<i *ngIf="responseMessage" class="text-sm bg-cyan-200 w-36 p-4 rounded-lg">{{responseMessage}}</i>
+	<div *ngIf="statusMessage" class="my-4 bg-cyan-200 w-36 p-2 rounded-lg">
+		<i class="text-sm">{{statusMessage}}</i>
+	</div>
+
+	<div *ngIf="streamErrorMessage">
+		<app-error-display [errorMessage]="streamErrorMessage"></app-error-display>
+	</div>
+
 	<div *ngIf="streamStarted">
 		<app-camera-frame (streamStopped)="handleStreamCrash()"></app-camera-frame>
 	</div>

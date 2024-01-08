@@ -1,5 +1,6 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {SocketService} from "../../service/socket.service";
+import {Observable, Subscription} from "rxjs";
 
 
 @Component({
@@ -9,34 +10,53 @@ import {SocketService} from "../../service/socket.service";
 export class CameraFrameComponent implements OnInit {
 
   @Output() streamStopped: EventEmitter<void> = new EventEmitter<void>();
-  timeoutId: any;
+  timeoutId: NodeJS.Timeout | undefined;
 
-  frameData: string | undefined;
+  frameDataSubscriber: Subscription | undefined;
+  _frameData: string | undefined;
 
   constructor(private socketService: SocketService) { }
 
   ngOnInit(): void {
-    this.socketService.getFrame().subscribe((data) => {
-      this.frameData = 'data:image/jpeg;base64,' + data.data;
-    });
-
+    this.watchFrameData();
     this.startObservingFrameData();
   }
 
-  private startObservingFrameData(): void {
-    let lastValue = this.frameData;
+  public watchFrameData(): void {
+    this.frameDataSubscriber = this.socketService.getFrame().subscribe((data) => {
+      this._frameData = 'data:image/jpeg;base64,' + data.data;
+    });
+  }
+
+  public pauseFrameData(): void {
+    this.frameDataSubscriber?.unsubscribe();
+  }
+
+  public startObservingFrameData(): void {
+    let lastValue = this._frameData;
 
     this.timeoutId = setInterval(() => {
-      if (this.frameData && this.frameData === lastValue) {
+      if (this._frameData && this._frameData === lastValue) {
         this.handleStreamStop();
       } else {
-        lastValue = this.frameData;
+        lastValue = this._frameData;
       }
     }, 3000);
+  }
+
+  public stopObservingFrameData()  {
+    if (this.timeoutId) {
+      clearInterval(this.timeoutId)
+    }
+    this.timeoutId = undefined;
   }
 
   private handleStreamStop(): void {
     this.streamStopped.emit();
   }
+  //
+  // public getFrameData(): string | undefined {
+  //   return this._frameData;
+  // }
 
 }
