@@ -17,6 +17,8 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   paused: boolean = false;
   streamActive: boolean = false;
 
+  serverResponseTimeout: NodeJS.Timeout | undefined;
+
   constructor(private socketService: SocketService) { }
 
   ngOnInit(): void {
@@ -36,9 +38,16 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   }
 
   startWatchingStream(): void {
+    this.setStatusMessage('Waiting for server response...');
     this.connect().subscribe(() => {
       this.initStream();
     });
+
+    this.serverResponseTimeout = setInterval(() => {
+      if (!this.streamActive) {
+        this.setErrorMessage('Failed to load stream, try again later')
+      }
+    }, 12000);
   }
 
   stopWatchingStream(): void {
@@ -49,24 +58,26 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   }
 
   togglePause(): void {
-    this.paused = !this.paused;
-    if (this.paused) {
-      this.cameraFrameComponent.pauseFrameData();
-      this.cameraFrameComponent.stopObservingFrameData();
-      this.setStatusMessage('Stream paused');
-    }
-    else if (!this.paused) {
-      this.cameraFrameComponent.watchFrameData();
-      this.cameraFrameComponent.startObservingFrameData();
-      this.setStatusMessage('');
+    if (this.streamActive) {
+      this.paused = !this.paused;
+      if (this.paused) {
+        this.cameraFrameComponent.pauseFrameData();
+        this.cameraFrameComponent.stopObservingFrameData();
+        this.setStatusMessage('Stream paused');
+      }
+      else if (!this.paused) {
+        this.cameraFrameComponent.watchFrameData();
+        this.cameraFrameComponent.startObservingFrameData();
+        this.setStatusMessage('');
+      }
     }
   }
 
   initStream(): void {
-    this.setStatusMessage('Waiting for server response...');
     this.socketService.startStream().subscribe(() => {
       this.setStatusMessage('Request received, starting stream...');
       this.streamActive = true;
+      clearInterval(this.serverResponseTimeout);
     });
   }
 
@@ -79,15 +90,18 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   }
 
   setStatusMessage(message: string): void {
-    this.errorMessage = ''
+    this.errorMessage = undefined;
     this.statusMessage = message;
-    this.streamActive = true;
   }
 
   setErrorMessage(message: string) {
-    this.statusMessage = '';
+    this.statusMessage = undefined;
     this.errorMessage = message;
     this.streamActive = false;
+
+    if (this.errorMessage) {
+      clearInterval(this.serverResponseTimeout);
+    }
   }
 
 
