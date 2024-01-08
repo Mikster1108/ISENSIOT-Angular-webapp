@@ -9,7 +9,8 @@ import {Observable, Subscription} from "rxjs";
 })
 export class CameraFrameComponent implements OnInit {
 
-  @Output() streamStopped: EventEmitter<void> = new EventEmitter<void>();
+  @Output() statusEmitter: EventEmitter<string> = new EventEmitter<string>();
+  @Output() errorEmitter: EventEmitter<string> = new EventEmitter<string>();
   timeoutId: NodeJS.Timeout | undefined;
 
   frameDataSubscriber: Subscription | undefined;
@@ -24,6 +25,7 @@ export class CameraFrameComponent implements OnInit {
 
   public watchFrameData(): void {
     this.frameDataSubscriber = this.socketService.getFrame().subscribe((data) => {
+      this.emitStatusMessage('');
       this._frameData = 'data:image/jpeg;base64,' + data.data;
     });
   }
@@ -37,7 +39,7 @@ export class CameraFrameComponent implements OnInit {
 
     this.timeoutId = setInterval(() => {
       if (this._frameData && this._frameData === lastValue) {
-        this.handleStreamStop();
+        this.emitErrorMessage('Lost connection to the server!');
       } else {
         lastValue = this._frameData;
       }
@@ -51,12 +53,12 @@ export class CameraFrameComponent implements OnInit {
     this.timeoutId = undefined;
   }
 
-  private handleStreamStop(): void {
-    this.streamStopped.emit();
+  private emitStatusMessage(message?: string): void {
+    this.statusEmitter.emit(message);
   }
-  //
-  // public getFrameData(): string | undefined {
-  //   return this._frameData;
-  // }
+
+  private emitErrorMessage(message?: string): void {
+    this.errorEmitter.emit(message);
+  }
 
 }

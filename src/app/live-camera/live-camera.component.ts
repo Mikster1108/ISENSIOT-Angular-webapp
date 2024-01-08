@@ -12,11 +12,10 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   @ViewChild(CameraFrameComponent) cameraFrameComponent!: CameraFrameComponent;
 
   statusMessage: string | undefined;
-  streamErrorMessage: string | undefined;
+  errorMessage: string | undefined;
 
   paused: boolean = false;
-  streamStarted: boolean = false;
-  // streamTimeoutId: NodeJS.Timeout | undefined;
+  streamActive: boolean = false;
 
   constructor(private socketService: SocketService) { }
 
@@ -33,7 +32,7 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
 
   disconnect(): void {
     this.socketService.disconnect();
-    this.streamStarted = false;
+    this.streamActive = false;
   }
 
   startWatchingStream(): void {
@@ -43,9 +42,9 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   }
 
   stopWatchingStream(): void {
-    this.statusMessage = 'Exiting stream...';
-    this.streamStarted = false;
-    this.statusMessage = undefined;
+    this.setStatusMessage('Exiting stream...');
+    this.streamActive = false;
+    this.setStatusMessage('');
     this.disconnect();
   }
 
@@ -54,47 +53,42 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
     if (this.paused) {
       this.cameraFrameComponent.pauseFrameData();
       this.cameraFrameComponent.stopObservingFrameData();
+      this.setStatusMessage('Stream paused');
     }
     else if (!this.paused) {
       this.cameraFrameComponent.watchFrameData();
       this.cameraFrameComponent.startObservingFrameData();
+      this.setStatusMessage('');
     }
   }
 
   initStream(): void {
-    this.statusMessage = 'Waiting for server response...';
+    this.setStatusMessage('Waiting for server response...');
     this.socketService.startStream().subscribe(() => {
-      this.streamStarted = true;
-      this.statusMessage = 'Loading stream...'
+      this.setStatusMessage('Request received, starting stream...');
+      this.streamActive = true;
     });
   }
 
-  // private startObservingStreamResponse(): void {
-  //   let lastValue = this.cameraFrameComponent.getFrameData();
-  //
-  //   this.streamTimeoutId = setInterval(() => {
-  //     if (this.cameraFrameComponent.getFrameData() && this.cameraFrameComponent.getFrameData() === lastValue) {
-  //       this.streamErrorMessage = 'Failed to load stream, if it does not show up after a while reload the page.'
-  //     }
-  //     else if (this.cameraFrameComponent.getFrameData()) {
-  //       this.statusMessage = undefined;
-  //     }
-  //     else {
-  //       lastValue = this.cameraFrameComponent.getFrameData();
-  //     }
-  //   }, 8000);
-  // }
-  //
-  // private stopObservingFrameData()  {
-  //   if (this.streamTimeoutId) {
-  //     clearInterval(this.streamTimeoutId)
-  //   }
-  //   this.streamTimeoutId = undefined;
-  // }
-
-  handleStreamCrash(): void {
-    this.streamErrorMessage = 'Connection to stream was broken!'
-    this.streamStarted = false;
+  receiveStreamStatusMessage(message: string): void {
+    this.setStatusMessage(message);
   }
+
+  receiveStreamErrorMessage(message: string): void {
+    this.setErrorMessage(message);
+  }
+
+  setStatusMessage(message: string): void {
+    this.errorMessage = ''
+    this.statusMessage = message;
+    this.streamActive = true;
+  }
+
+  setErrorMessage(message: string) {
+    this.statusMessage = '';
+    this.errorMessage = message;
+    this.streamActive = false;
+  }
+
 
 }
