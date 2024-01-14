@@ -1,6 +1,6 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {SocketService} from "../../service/socket.service";
-import {Observable, Subscription} from "rxjs";
+import {Subscription} from "rxjs";
 
 
 @Component({
@@ -16,16 +16,22 @@ export class CameraFrameComponent implements OnInit {
   frameDataSubscriber: Subscription | undefined;
   _frameData: string | undefined;
 
+  initPhase: boolean = true;
+
   constructor(private socketService: SocketService) { }
 
   ngOnInit(): void {
     this.watchFrameData();
-    this.startObservingFrameData();
+
   }
 
   public watchFrameData(): void {
     this.frameDataSubscriber = this.socketService.getFrame().subscribe((data) => {
-      this.emitStatusMessage('');
+      if (this.initPhase) {
+        this.emitStatusMessage('');
+        this.startObservingFrameData();
+        this.initPhase = false;
+      }
       this._frameData = 'data:image/jpeg;base64,' + data.data;
     });
   }

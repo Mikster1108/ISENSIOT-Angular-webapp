@@ -3,6 +3,8 @@ import {SocketService} from "../service/socket.service";
 import {Observable} from "rxjs";
 import {CameraFrameComponent} from "./camera-frame/camera-frame.component";
 
+const SERVER_TIMEOUT_RESPONSE_MS = 10000
+
 @Component({
   selector: 'app-live-camera',
   templateUrl: './live-camera.component.html',
@@ -38,16 +40,13 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   }
 
   startWatchingStream(): void {
-    this.setStatusMessage('Waiting for server response...');
-    this.connect().subscribe(() => {
-      this.initStream();
-    });
-
-    this.serverResponseTimeout = setInterval(() => {
-      if (!this.streamActive) {
-        this.setErrorMessage('Failed to load stream, try again later')
-      }
-    }, 12000);
+    if (!this.serverResponseTimeout) {
+      this.waitForServerResponse();
+      this.setStatusMessage('Waiting for server response...');
+      this.connect().subscribe(() => {
+        this.initStream();
+      });
+    }
   }
 
   stopWatchingStream(): void {
@@ -63,7 +62,6 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
       if (this.paused) {
         this.cameraFrameComponent.pauseFrameData();
         this.cameraFrameComponent.stopObservingFrameData();
-        this.setStatusMessage('Stream paused');
       }
       else if (!this.paused) {
         this.cameraFrameComponent.watchFrameData();
@@ -76,9 +74,37 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   initStream(): void {
     this.socketService.startStream().subscribe(() => {
       this.setStatusMessage('Request received, starting stream...');
-      this.streamActive = true;
-      clearInterval(this.serverResponseTimeout);
+      this.clearWaitForServerResponse();
+
+      const interval_ms = 500;
+      const max_tries = SERVER_TIMEOUT_RESPONSE_MS / interval_ms;
+      let attempts = 0;
+      this.serverResponseTimeout = setInterval(() => {
+        if (this.cameraFrameComponent && this.cameraFrameComponent._frameData) {
+          this.streamActive = true;
+          this.clearWaitForServerResponse();
+          this.setStatusMessage('');
+        } else {
+          attempts++;
+        }
+        if (attempts >= max_tries) {
+          this.setErrorMessage('Server response timed out, try again later');
+        }
+      }, interval_ms);
     });
+  }
+
+  waitForServerResponse(): void {
+    this.serverResponseTimeout = setInterval(() => {
+      if (!this.streamActive) {
+        this.setErrorMessage('Failed to load stream, try again later')
+      }
+    }, SERVER_TIMEOUT_RESPONSE_MS);
+  }
+
+  clearWaitForServerResponse(): void {
+    clearInterval(this.serverResponseTimeout);
+    this.serverResponseTimeout = undefined;
   }
 
   receiveStreamStatusMessage(message: string): void {
@@ -100,7 +126,7 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
     this.streamActive = false;
 
     if (this.errorMessage) {
-      clearInterval(this.serverResponseTimeout);
+      this.clearWaitForServerResponse();
     }
   }
 
