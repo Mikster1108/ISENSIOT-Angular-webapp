@@ -3,7 +3,7 @@ import {SocketService} from "../service/socket.service";
 import {Observable} from "rxjs";
 import {CameraFrameComponent} from "./camera-frame/camera-frame.component";
 
-const SERVER_TIMEOUT_RESPONSE_MS = 10000
+const SERVER_TIMEOUT_RESPONSE_MS = 15000
 
 @Component({
   selector: 'app-live-camera',
@@ -50,7 +50,6 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   }
 
   stopWatchingStream(): void {
-    this.setStatusMessage('Exiting stream...');
     this.streamActive = false;
     this.setStatusMessage('');
     this.disconnect();
@@ -128,6 +127,7 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
     if (this.errorMessage) {
       this.clearWaitForServerResponse();
     }
+    this.disconnect();
   }
 
 
