@@ -22,6 +22,7 @@ export class DashboardComponent implements OnInit{
           items = items.splice(0, VIDEO_DISPLAY_AMOUNT);
 
           this.videoUrls = this.videoService.loadVideos(items);
+
         }, error => {
           this.showErrorMessage = true;
         }
