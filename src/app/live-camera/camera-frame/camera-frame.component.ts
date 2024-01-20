@@ -3,6 +3,8 @@ import {SocketService} from "../../service/socket.service";
 import {Subscription} from "rxjs";
 
 
+const LOST_SERVER_CONNECTION_TIMEOUT_MS = 3000
+
 @Component({
   selector: 'app-camera-frame',
   templateUrl: './camera-frame.component.html'
@@ -22,7 +24,6 @@ export class CameraFrameComponent implements OnInit {
 
   ngOnInit(): void {
     this.watchFrameData();
-
   }
 
   public watchFrameData(): void {
@@ -49,10 +50,10 @@ export class CameraFrameComponent implements OnInit {
       } else {
         lastValue = this._frameData;
       }
-    }, 3000);
+    }, LOST_SERVER_CONNECTION_TIMEOUT_MS);
   }
 
-  public stopObservingFrameData()  {
+  public stopObservingFrameData(): void {
     if (this.timeoutId) {
       clearInterval(this.timeoutId)
     }

@@ -26,7 +26,7 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.socketService.disconnect();
   }
 
