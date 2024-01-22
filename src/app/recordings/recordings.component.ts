@@ -17,18 +17,23 @@ export class RecordingsComponent implements OnInit {
   totalPages: number = 1;
   currentPage: number = 1;
 
+  filterOptions: string[] = ['date', 'duration'];
+  selectedOption: string | undefined;
+
   constructor(private videoService: VideoService) { }
 
 
   ngOnInit(): void {
     this.loadPreviews()
+    this.selectedOption = this.filterOptions[0];
   }
 
   loadPreviews(): void {
     this.video_links = [];
     this.video_filenames = [];
+    const query_param = this.selectedOption ? this.selectedOption : this.filterOptions[0];
 
-    this.videoService.getAllVideoLinks('date', this.currentPage).subscribe((responseData: any) => {
+    this.videoService.getAllVideoLinks(query_param, this.currentPage).subscribe((responseData: any) => {
       this.video_filenames = responseData.items;
       this.calculatePageAmount(responseData.total_items);
 
@@ -53,6 +58,11 @@ export class RecordingsComponent implements OnInit {
 
   calculatePageAmount(total_items: number): void {
     this.totalPages = Math.ceil(total_items / ITEMS_PER_PAGE);
+  }
+
+  setSelectedFilter(option: string | undefined) {
+    this.selectedOption = option;
+    this.loadPreviews()
   }
 
 }
