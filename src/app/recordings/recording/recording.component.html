@@ -1,4 +1,45 @@
-<div *ngIf="videoUrl && videoUrl[0]">
-	<app-video [videoUrl]="videoUrl[0]"></app-video>
-</div>
+<div *ngIf="videoUrl && videoUrl[0]" class="w-2/3 mx-auto mt-12">
+	<app-video [videoUrl]="videoUrl[0]" class="cursor-pointer"></app-video>
 
+	<div class="container my-4 mx-auto px-4 md:px-12">
+		<div class="flex grid-cols-3 justify-between">
+			<h2 class="no-underline text-xl text-black font-bold">{{ convertTimestampToDescription(convertVideoNameToTimestamp(videoName)) }}</h2>
+			<h2 class="no-underline text-xl text-black font-bold">Duration: {{ video_duration_description }}</h2>
+			<h2 class="no-underline text-xl text-black font-bold">Activation reason: {{ activation_reason }}</h2>
+		</div>
+	</div>
+
+	<div *ngIf="video_analysis_data.length > 0; else noDataAvailable" class="relative overflow-x-auto mt-8 mb-24 rounded-lg">
+		<table class="w-full text-sm text-left rtl:text-right text-gray-400">
+			<thead class="text-xs uppercase bg-gray-700 text-gray-400">
+			<tr>
+				<th scope="col" class="px-6 py-3">
+					Item
+				</th>
+				<th scope="col" class="px-6 py-3">
+					Timestamp in video
+				</th>
+<!--				<th scope="col" class="px-6 py-3">-->
+<!--					Timestamp in real time-->
+<!--				</th>-->
+			</tr>
+			</thead>
+			<tbody>
+<!--			todo: convert timestamps-->
+			<tr *ngFor="let data of video_analysis_data" class="border-b bg-gray-800 border-gray-700">
+				<th scope="row" class="px-6 py-4 font-medium whitespace-nowrap text-white">
+					{{ data.item_found }}
+				</th>
+				<td class="px-6 py-4">
+<!--					todo: on click go to timestamp in video-->
+					{{  convertNumberTimestampToVideoTimestamp(data.timestamp_ms) }}
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<ng-template #noDataAvailable>
+		<app-error-display [errorMessage]="'No data available'"></app-error-display>
+	</ng-template>
+</div>
