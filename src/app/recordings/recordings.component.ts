@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {VideoService} from "../service/video.service";
+import {Router} from "@angular/router";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -20,7 +21,7 @@ export class RecordingsComponent implements OnInit {
   filterOptions: string[] = ['date', 'duration'];
   selectedOption: string | undefined;
 
-  constructor(private videoService: VideoService) { }
+  constructor(private videoService: VideoService, private router: Router) { }
 
 
   ngOnInit(): void {
@@ -65,4 +66,7 @@ export class RecordingsComponent implements OnInit {
     this.loadPreviews()
   }
 
+  onRecordingClick(videoName: string): void {
+    this.router.navigate(['/recording', videoName]);
+  }
 }

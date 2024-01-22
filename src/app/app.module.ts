@@ -19,6 +19,7 @@ import {authInterceptorProviders} from "./helpers/auth.interceptor";
 import { ErrorDisplayComponent } from './error-display/error-display.component';
 import {CameraFrameComponent} from "./live-camera/camera-frame/camera-frame.component";
 import { RecordingPreviewComponent } from './recordings/recording-preview/recording-preview.component';
+import { RecordingComponent } from './recordings/recording/recording.component';
 
 
 @NgModule({
@@ -36,6 +37,7 @@ import { RecordingPreviewComponent } from './recordings/recording-preview/record
     ErrorDisplayComponent,
     CameraFrameComponent,
     RecordingPreviewComponent,
+    RecordingComponent,
   ],
     imports: [
         BrowserModule,
