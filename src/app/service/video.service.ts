@@ -66,4 +66,8 @@ export class VideoService {
 
         return videoUrls
     }
+
+    getPreviewImage(video_name: string) {
+        return this.http.get(`${PATH}/video-preview?filename=${video_name}`, { responseType: 'blob' });
+    }
 }
