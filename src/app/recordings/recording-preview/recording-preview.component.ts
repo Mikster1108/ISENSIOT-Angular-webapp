@@ -9,15 +9,14 @@ import {TimestampService} from "../../service/timestamp.service";
 export class RecordingPreviewComponent implements OnInit {
 
   @Input() imageUrl: string = '';
-  @Input() video_filename: string = '';
-  video_duration_description: string | undefined;
+  @Input() videoFilename: string = '';
+  videoDurationMs: number = 0;
 
   constructor(private videoService: VideoService, private timestampService: TimestampService) { }
 
   ngOnInit(): void {
-    this.videoService.getVideoLink(this.video_filename).subscribe((response: any) => {
-      const duration_sec = response.duration;
-      this.video_duration_description = this.timestampService.convertSecondsToReadableAmount(duration_sec);
+    this.videoService.getVideoLink(this.videoFilename).subscribe((response: any) => {
+      this.videoDurationMs = response.duration;
     });
   }
 
@@ -31,6 +30,10 @@ export class RecordingPreviewComponent implements OnInit {
 
   convertTimestampToDescription(timestamp: string): string {
     return this.timestampService.convertTimestampToDescription(timestamp);
+  }
+
+  convertNumberTimestampToVideoTimestamp(timestamp: number): string {
+    return this.timestampService.convertNumberToVideoTimestamp(timestamp);
   }
 
 }

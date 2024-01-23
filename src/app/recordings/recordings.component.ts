@@ -6,15 +6,14 @@ const ITEMS_PER_PAGE = 8;
 
 @Component({
   selector: 'app-recordings',
-  templateUrl: './recordings.component.html',
-  styleUrls: ['./recordings.component.css']
+  templateUrl: './recordings.component.html'
 })
 export class RecordingsComponent implements OnInit {
 
   errorMessage: string | undefined;
 
-  video_links: string[] = [];
-  video_filenames: string[] = [];
+  videoLinks: string[] = [];
+  videoFilenames: string[] = [];
   totalPages: number = 1;
   currentPage: number = 1;
 
@@ -30,19 +29,19 @@ export class RecordingsComponent implements OnInit {
   }
 
   loadPreviews(): void {
-    this.video_links = [];
-    this.video_filenames = [];
+    this.videoLinks = [];
+    this.videoFilenames = [];
     const query_param = this.selectedOption ? this.selectedOption : this.filterOptions[0];
 
     this.videoService.getAllVideoLinks(query_param, this.currentPage).subscribe((responseData: any) => {
-      this.video_filenames = responseData.items;
+      this.videoFilenames = responseData.items;
       this.calculatePageAmount(responseData.total_items);
 
-      for (let i = 0; i<this.video_filenames.length; i++) {
-        const filename = this.video_filenames[i];
+      for (let i = 0; i<this.videoFilenames.length; i++) {
+        const filename = this.videoFilenames[i];
         this.videoService.getPreviewImage(filename).subscribe((previewImage: any) => {
           let url = this.videoService.convertVideoToBlobUrl(previewImage);
-          this.video_links.push(url);
+          this.videoLinks.push(url);
         });
       }
     }, error => {

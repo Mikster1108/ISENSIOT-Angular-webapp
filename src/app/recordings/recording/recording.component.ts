@@ -12,9 +12,9 @@ export class RecordingComponent implements OnInit {
 
   videoName: string = '';
   videoUrl: string[] | undefined;
-  video_duration_description: string | undefined;
-  video_analysis_data: Sensordata[] = [];
-  activation_reason: string | undefined;
+  videoDurationMs: number = 0;
+  videoAnalysisData: Sensordata[] = [];
+  activationReason: string | undefined;
 
   constructor(private videoService: VideoService, private route: ActivatedRoute, private timestampService: TimestampService) { }
 
@@ -25,18 +25,16 @@ export class RecordingComponent implements OnInit {
     });
 
     this.videoService.getVideoLink(this.videoName).subscribe((response: any) => {
-      let duration_sec = response.duration;
+      this.videoDurationMs = response.duration;
       const sensor_data = response.analysis_data;
-
-      this.video_duration_description = this.timestampService.convertSecondsToReadableAmount(duration_sec);
 
       for (let data of sensor_data) {
         const new_data: Sensordata = new Sensordata(data.timestamp_ms, data.item_found);
-        this.video_analysis_data.push(new_data);
+        this.videoAnalysisData.push(new_data);
       }
 
-      const first_item = this.video_analysis_data[0];
-      this.activation_reason = first_item ? first_item.item_found : "Unknown";
+      const first_item = this.videoAnalysisData[0];
+      this.activationReason = first_item ? first_item.item_found : "Unknown";
     });
   }
 
@@ -55,14 +53,20 @@ export class RecordingComponent implements OnInit {
   }
 
   convertNumberTimestampToVideoTimestamp(timestamp: number): string {
+    return this.timestampService.convertNumberToVideoTimestamp(timestamp);
+  }
+
+  convertTimestampToRealTimeFormat(secondsToAdd: number): string {
+    const new_timestamp = this.timestampService.addSecondsToTimestamp(this.videoName, secondsToAdd);
+    return this.timestampService.convertTimestampToRealTimeFormat(new_timestamp);
+  }
+
+  jumpToTimestamp(timestamp: number): void {
+    const videoElement = document.getElementById("video") as HTMLVideoElement;
     const seconds = Math.floor(timestamp / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
+    videoElement.currentTime = seconds;
 
-    const formattedMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
-    const formattedSeconds = remainingSeconds < 10 ? `0${remainingSeconds}` : `${remainingSeconds}`;
-
-    return `${formattedMinutes}:${formattedSeconds}`;
+    videoElement.play();
   }
 
 }
