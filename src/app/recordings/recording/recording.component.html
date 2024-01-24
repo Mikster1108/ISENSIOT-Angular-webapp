@@ -2,14 +2,14 @@
 	<app-error-display [errorMessage]="errorMessage"></app-error-display>
 </div>
 
-<div *ngIf="recording != undefined && recording.url && recording.url[0]" class="w-2/3 mx-auto mt-12">
+<div *ngIf="recording != undefined && recording.url && recording.url[0]" class="w-11/12 lg:w-2/3 mx-auto mt-12">
 	<app-video [videoUrl]="recording.url[0]" class="cursor-pointer"></app-video>
 
-	<div class="container my-4 mx-auto px-4 md:px-12">
-		<div class="flex grid-cols-3 justify-between">
-			<h2 class="no-underline text-xl text-black font-bold">{{ convertTimestampToDescription(convertVideoNameToTimestamp(recording.name)) }}</h2>
-			<h2 class="no-underline text-xl text-black font-bold">Duration: {{ convertNumberTimestampToVideoTimestamp(recording.duration_sec*1000) }}</h2>
-			<h2 class="no-underline text-xl text-black font-bold">Activation reason: {{ activationReason }}</h2>
+	<div class="container my-4 mx-auto px-4 md:px-12 text-lg">
+		<div class="flex flex-col text-center lg:flex-row lg:grid-cols-3 lg:justify-between">
+			<h2 class="py-2 md:py-0 no-underline text-black font-bold">{{ convertTimestampToDescription(convertVideoNameToTimestamp(recording.name)) }}</h2>
+			<h2 class="py-2 md:py-0 no-underline text-black font-bold">Duration: {{ convertNumberTimestampToVideoTimestamp(recording.duration_sec*1000) }}</h2>
+			<h2 class="py-2 md:py-0 no-underline text-black font-bold">Activation reason: {{ activationReason }}</h2>
 		</div>
 	</div>
 
