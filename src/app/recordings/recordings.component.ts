@@ -64,7 +64,7 @@ export class RecordingsComponent implements OnInit {
     this.totalPages = Math.ceil(this.totalItems / ITEMS_PER_PAGE);
   }
 
-  convertFilterOptionToQueryParam() {
+  convertFilterOptionToQueryParam(): void {
     switch (this.selectedOption) {
       case 'Most recent recordings':
         this.queryParam = 'date';
@@ -102,7 +102,7 @@ export class RecordingsComponent implements OnInit {
     }
   }
 
-  setSelectedFilter(option: string | undefined) {
+  setSelectedFilter(option: string | undefined): void {
     this.selectedOption = option;
     this.loadPreviews();
   }
