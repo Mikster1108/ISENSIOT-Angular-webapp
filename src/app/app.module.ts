@@ -18,6 +18,8 @@ import {CommonModule} from "@angular/common";
 import {authInterceptorProviders} from "./helpers/auth.interceptor";
 import { ErrorDisplayComponent } from './error-display/error-display.component';
 import {CameraFrameComponent} from "./live-camera/camera-frame/camera-frame.component";
+import { RecordingPreviewComponent } from './recordings/recording-preview/recording-preview.component';
+import { RecordingComponent } from './recordings/recording/recording.component';
 
 
 @NgModule({
@@ -34,6 +36,8 @@ import {CameraFrameComponent} from "./live-camera/camera-frame/camera-frame.comp
     VideoComponent,
     ErrorDisplayComponent,
     CameraFrameComponent,
+    RecordingPreviewComponent,
+    RecordingComponent,
   ],
     imports: [
         BrowserModule,

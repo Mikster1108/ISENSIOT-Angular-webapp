@@ -16,7 +16,7 @@ export class DashboardComponent implements OnInit{
 
   loadVideos(): void {
     this.showErrorMessage = false;
-    this.videoService.getAllVideoLinks('date', 1).subscribe(
+    this.videoService.getAllVideoLinks('date', 1, true).subscribe(
         (responseData: any) => {
           let items = responseData.items;
           items = items.splice(0, VIDEO_DISPLAY_AMOUNT);
