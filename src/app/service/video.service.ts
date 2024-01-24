@@ -18,7 +18,7 @@ export class VideoService {
         return this.http.get(`${PATH}/?filename=${filename}`)
     }
 
-    getAllVideoLinks(queryParam?: string, page: number = 1, reverse?: boolean) {
+    getAllVideoLinks(queryParam?: string, page: number = 1, reverse: boolean = true) {
         return this.http.get(`${PATH}/all?filter=${queryParam}&page=${page}&reverse=${reverse}`)
     }
 
