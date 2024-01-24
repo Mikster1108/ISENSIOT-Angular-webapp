@@ -1,15 +1,19 @@
-<div *ngIf="videoUrl && videoUrl[0]" class="w-2/3 mx-auto mt-12">
-	<app-video [videoUrl]="videoUrl[0]" class="cursor-pointer"></app-video>
+<div *ngIf="errorMessage">
+	<app-error-display [errorMessage]="errorMessage"></app-error-display>
+</div>
+
+<div *ngIf="recording != undefined && recording.url && recording.url[0]" class="w-2/3 mx-auto mt-12">
+	<app-video [videoUrl]="recording.url[0]" class="cursor-pointer"></app-video>
 
 	<div class="container my-4 mx-auto px-4 md:px-12">
 		<div class="flex grid-cols-3 justify-between">
-			<h2 class="no-underline text-xl text-black font-bold">{{ convertTimestampToDescription(convertVideoNameToTimestamp(videoName)) }}</h2>
-			<h2 class="no-underline text-xl text-black font-bold">Duration: {{ convertNumberTimestampToVideoTimestamp(videoDurationMs*1000) }}</h2>
+			<h2 class="no-underline text-xl text-black font-bold">{{ convertTimestampToDescription(convertVideoNameToTimestamp(recording.name)) }}</h2>
+			<h2 class="no-underline text-xl text-black font-bold">Duration: {{ convertNumberTimestampToVideoTimestamp(recording.duration_sec*1000) }}</h2>
 			<h2 class="no-underline text-xl text-black font-bold">Activation reason: {{ activationReason }}</h2>
 		</div>
 	</div>
 
-	<div *ngIf="videoAnalysisData.length > 0; else noDataAvailable" class="relative overflow-x-auto mt-8 mb-24 rounded-lg">
+	<div *ngIf="recording.items_found.length > 0; else noDataAvailable" class="relative overflow-x-auto mt-8 mb-24 rounded-lg">
 		<table class="w-full text-sm text-left rtl:text-right text-gray-400">
 			<thead class="text-xs uppercase bg-gray-700 text-gray-400">
 			<tr>
@@ -25,7 +29,7 @@
 			</tr>
 			</thead>
 			<tbody>
-			<tr *ngFor="let data of videoAnalysisData" class="border-b bg-gray-800 border-gray-700">
+			<tr *ngFor="let data of recording.items_found" class="border-b bg-gray-800 border-gray-700">
 				<th scope="row" class="px-6 py-4 font-medium whitespace-nowrap text-white">
 					{{ data.item_found }}
 				</th>

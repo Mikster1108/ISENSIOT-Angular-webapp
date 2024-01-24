@@ -3,6 +3,7 @@ import {VideoService} from "../../service/video.service";
 import {ActivatedRoute} from "@angular/router";
 import {TimestampService} from "../../service/timestamp.service";
 import {Sensordata} from "../../model/sensordata";
+import {Recording} from "../../model/recording";
 
 @Component({
   selector: 'app-recording',
@@ -10,38 +11,46 @@ import {Sensordata} from "../../model/sensordata";
 })
 export class RecordingComponent implements OnInit {
 
-  videoName: string = '';
-  videoUrl: string[] | undefined;
-  videoDurationMs: number = 0;
-  videoAnalysisData: Sensordata[] = [];
+  errorMessage: string | undefined;
+
+  recording: Recording | undefined;
   activationReason: string | undefined;
 
   constructor(private videoService: VideoService, private route: ActivatedRoute, private timestampService: TimestampService) { }
 
   ngOnInit(): void {
+    let videoName: string = '';
+    let videoUrl: string[] = [];
+    let videoDurationMs: number = 0;
+    let videoAnalysisData: Sensordata[] = [];
+
     this.route.params.subscribe(params => {
-      this.videoName = params['videoName'];
-      this.loadVideo();
+      videoName = params['videoName'];
+      videoUrl = this.loadVideo(videoName);
     });
 
-    this.videoService.getVideoLink(this.videoName).subscribe((response: any) => {
-      this.videoDurationMs = response.duration;
+    this.videoService.getVideoLink(videoName).subscribe((response: any) => {
+      videoDurationMs = response.duration;
       const sensor_data = response.analysis_data;
 
       for (let data of sensor_data) {
         const new_data: Sensordata = new Sensordata(data.timestamp_ms, data.item_found);
-        this.videoAnalysisData.push(new_data);
+        videoAnalysisData.push(new_data);
       }
 
-      const first_item = this.videoAnalysisData[0];
+      const first_item = videoAnalysisData[0];
       this.activationReason = first_item ? first_item.item_found : "Unknown";
+
+      this.recording = new Recording(videoName, videoDurationMs, videoAnalysisData, videoUrl);
+    }, error => {
+      this.errorMessage = "No Video found";
     });
   }
 
-  loadVideo(): void {
-    let videoName = [];
-    videoName.push(this.videoName);
-    this.videoUrl = this.videoService.loadVideos(videoName);
+  loadVideo(videoName: string): string [] {
+    let videoNameResult = [];
+    videoNameResult.push(videoName);
+    return this.videoService.loadVideos(videoNameResult);
   }
 
   convertVideoNameToTimestamp(filename: string): string {
@@ -57,7 +66,7 @@ export class RecordingComponent implements OnInit {
   }
 
   convertTimestampToRealTimeFormat(secondsToAdd: number): string {
-    const new_timestamp = this.timestampService.addSecondsToTimestamp(this.videoName, secondsToAdd);
+    const new_timestamp = this.timestampService.addSecondsToTimestamp(<string>this.recording?.name, secondsToAdd);
     return this.timestampService.convertTimestampToRealTimeFormat(new_timestamp);
   }
 

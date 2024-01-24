@@ -1,20 +1,32 @@
+import {Sensordata} from "./sensordata";
+
 export class Recording {
-  private _id: number;
   private _name: string;
   private _duration_sec: number;
+  private _items_found: Sensordata[];
+  private _url: string[];
 
-  constructor(id: number, name: string, duration_sec: number) {
-    this._id = id;
+  constructor(name: string, duration_sec: number, items_found: Sensordata[], url: string[]) {
     this._name = name;
     this._duration_sec = duration_sec;
+    this._items_found = items_found;
+    this._url = url;
   }
 
-  get id(): number {
-    return this._id;
+  get duration_sec(): number {
+    return this._duration_sec;
   }
 
-  set id(value: number) {
-    this._id = value;
+  set duration_sec(value: number) {
+    this._duration_sec = value;
+  }
+
+  get items_found(): Sensordata[] {
+    return this._items_found;
+  }
+
+  set items_found(value: Sensordata[]) {
+    this._items_found = value;
   }
 
   get name(): string {
@@ -25,11 +37,11 @@ export class Recording {
     this._name = value;
   }
 
-  get duration_sec(): number {
-    return this._duration_sec;
+  get url(): string[] {
+    return this._url;
   }
 
-  set duration_sec(value: number) {
-    this._duration_sec = value;
+  set url(value: string[]) {
+    this._url = value;
   }
 }
