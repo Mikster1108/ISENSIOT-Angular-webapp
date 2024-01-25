@@ -8,4 +8,8 @@ export class ErrorDisplayComponent {
 
   @Input() errorMessage: string | undefined;
 
+
+  removeMessage() {
+    this.errorMessage = undefined;
+  }
 }
