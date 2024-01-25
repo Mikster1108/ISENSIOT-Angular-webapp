@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {SocketService} from "../service/socket.service";
 import {Observable} from "rxjs";
 import {CameraFrameComponent} from "./camera-frame/camera-frame.component";
+import {LivestreamService} from "../service/livestream.service";
 
 const SERVER_TIMEOUT_RESPONSE_MS = 15000
 
@@ -17,11 +18,12 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
   errorMessage: string | undefined;
 
   paused: boolean = false;
+  recording: boolean = false;
   streamActive: boolean = false;
 
   serverResponseTimeout: NodeJS.Timeout | undefined;
 
-  constructor(private socketService: SocketService) { }
+  constructor(private socketService: SocketService, private livestreamService: LivestreamService) { }
 
   ngOnInit(): void {
   }
@@ -45,6 +47,27 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
       this.setStatusMessage('Waiting for server response...');
       this.connect().subscribe(() => {
         this.initStream();
+      });
+    }
+  }
+
+  startRecording(): void {
+    if (!this.serverResponseTimeout) {
+      this.setStatusMessage('Waiting for response');
+      this.serverResponseTimeout = setInterval(() => {
+        if (!this.recording) {
+          this.errorMessage = 'Failed to start recording';
+        }
+      }, SERVER_TIMEOUT_RESPONSE_MS);
+
+      this.livestreamService.startStream().subscribe((response: any) => {
+        this.clearWaitForServerResponse();
+        this.setStatusMessage(response['success']);
+        this.recording = true;
+      }, error => {
+        this.recording = false;
+        this.statusMessage = '';
+        this.errorMessage = error.error.error;
       });
     }
   }
