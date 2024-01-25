@@ -43,7 +43,7 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
 
   startWatchingStream(): void {
     if (!this.serverResponseTimeout) {
-      this.waitForServerResponse();
+      this.waitForServerResponse(this.streamActive);
       this.setStatusMessage('Waiting for server response...');
       this.connect().subscribe(() => {
         this.initStream();
@@ -51,46 +51,11 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
     }
   }
 
-  startRecording(): void {
-    if (!this.serverResponseTimeout) {
-      this.setStatusMessage('Waiting for response');
-      this.serverResponseTimeout = setInterval(() => {
-        if (!this.recording) {
-          this.errorMessage = 'Failed to start recording';
-        }
-      }, SERVER_TIMEOUT_RESPONSE_MS);
-
-      this.livestreamService.startStream().subscribe((response: any) => {
-        this.clearWaitForServerResponse();
-        this.setStatusMessage(response['success']);
-        this.recording = true;
-      }, error => {
-        this.recording = false;
-        this.statusMessage = '';
-        this.errorMessage = error.error.error;
-      });
-    }
-  }
-
   stopWatchingStream(): void {
     this.streamActive = false;
-    this.setStatusMessage('');
+    this.setStatusMessage(undefined);
+    this.clearWaitForServerResponse();
     this.disconnect();
-  }
-
-  togglePause(): void {
-    if (this.streamActive) {
-      this.paused = !this.paused;
-      if (this.paused) {
-        this.cameraFrameComponent.pauseFrameData();
-        this.cameraFrameComponent.stopObservingFrameData();
-      }
-      else if (!this.paused) {
-        this.cameraFrameComponent.watchFrameData();
-        this.cameraFrameComponent.startObservingFrameData();
-        this.setStatusMessage('');
-      }
-    }
   }
 
   initStream(): void {
@@ -105,7 +70,7 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
         if (this.cameraFrameComponent && this.cameraFrameComponent._frameData) {
           this.streamActive = true;
           this.clearWaitForServerResponse();
-          this.setStatusMessage('');
+          this.setStatusMessage(undefined);
         } else {
           attempts++;
         }
@@ -116,10 +81,48 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
     });
   }
 
-  waitForServerResponse(): void {
+  togglePause(): void {
+    if (this.streamActive) {
+      this.paused = !this.paused;
+      if (this.paused) {
+        this.cameraFrameComponent.pauseFrameData();
+        this.cameraFrameComponent.stopObservingFrameData();
+      }
+      else if (!this.paused) {
+        this.cameraFrameComponent.watchFrameData();
+        this.cameraFrameComponent.startObservingFrameData();
+        this.setStatusMessage(undefined);
+      }
+    }
+  }
+
+  startRecording(): void {
+    if (!this.serverResponseTimeout) {
+      this.setStatusMessage('Pausing stream and waiting for response...');
+      this.waitForServerResponse(this.recording);
+      this.togglePause();
+
+      this.livestreamService.startStream().subscribe((response: any) => {
+        this.togglePause();
+        this.clearWaitForServerResponse();
+        this.setStatusMessage(response['success']);
+        this.recording = true;
+      }, error => {
+        this.togglePause();
+        this.recording = false;
+        if (this.serverResponseTimeout) {
+          this.setErrorMessage(error.error.error);
+        }
+        this.clearWaitForServerResponse();
+      });
+    }
+  }
+
+  waitForServerResponse(condition: boolean): void {
     this.serverResponseTimeout = setInterval(() => {
-      if (!this.streamActive) {
-        this.setErrorMessage('Failed to load stream, try again later')
+      if (!condition) {
+        this.setErrorMessage('Response timed out, try again later')
+        this.clearWaitForServerResponse();
       }
     }, SERVER_TIMEOUT_RESPONSE_MS);
   }
@@ -135,22 +138,18 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
 
   receiveStreamErrorMessage(message: string): void {
     this.setErrorMessage(message);
+    this.streamActive = false;
+    this.clearWaitForServerResponse();
   }
 
-  setStatusMessage(message: string): void {
+  setStatusMessage(message: string | undefined): void {
     this.errorMessage = undefined;
     this.statusMessage = message;
   }
 
-  setErrorMessage(message: string) {
+  setErrorMessage(message: string | undefined) {
     this.statusMessage = undefined;
     this.errorMessage = message;
-    this.streamActive = false;
-
-    if (this.errorMessage) {
-      this.clearWaitForServerResponse();
-    }
-    this.disconnect();
   }
 
 
