@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {SocketService} from "../service/socket.service";
 import {Observable, Subscription} from "rxjs";
 import {CameraFrameComponent} from "./camera-frame/camera-frame.component";
+
 const SERVER_TIMEOUT_RESPONSE_MS = 15000
 
 @Component({
@@ -33,7 +34,6 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
         checkRecordingOnLoadPageObservable.unsubscribe();
       });
     }, 3000);
-
   }
 
   ngOnDestroy(): void {
@@ -104,28 +104,34 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
     this.connect();
 
     if (!this.recordingResponseTimeout) {
-      this.setStatusMessage('Pausing stream and waiting for response...');
       this.waitForRecordingResponse();
       this.togglePause();
 
       // start recording also listens for response, unsubscribe after first response
       const startRecordingObservable = this.socketService.startRecording().subscribe((response: any) => {
-        this.togglePause();
-        this.clearRecordingResponse();
-        this.setStatusMessage('Parsing response...')
-
-        if (response['data']) {
-          this.recording = true;
-          this.setStatusMessage(response['data']);
-          startRecordingObservable.unsubscribe();
+        if (response['init']) {
+          this.setStatusMessage(response['init']);
         }
 
         else {
-          this.recording = false;
-          this.setErrorMessage(response['error']);
-          startRecordingObservable.unsubscribe();
+          this.togglePause();
+          this.clearRecordingResponse();
+          this.setStatusMessage('Parsing response...')
+
+          if (response['data']) {
+            this.recording = true;
+            this.setStatusMessage(response['data']);
+            startRecordingObservable.unsubscribe();
+          }
+
+          else {
+            this.recording = false;
+            this.setErrorMessage(response['error']);
+            startRecordingObservable.unsubscribe();
+          }
         }
-      })
+
+      });
     }
   }
 
