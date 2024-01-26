@@ -21,16 +21,19 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
 
   serverResponseTimeout: NodeJS.Timeout | undefined;
   recordingResponseTimeout: NodeJS.Timeout | undefined;
-  timeRecordingSeconds: number = 0;
   recordingObservable: Subscription | undefined;
 
   constructor(private socketService: SocketService) { }
 
   ngOnInit(): void {
     this.connect();
-    this.socketService.listenForRecording().subscribe(() => {
-      this.observeRecording();
-    });
+    setInterval(() => {
+      const checkRecordingOnLoadPageObservable = this.socketService.listenForRecording().subscribe(() => {
+        this.observeRecording();
+        checkRecordingOnLoadPageObservable.unsubscribe();
+      });
+    }, 3000);
+
   }
 
   ngOnDestroy(): void {
@@ -99,50 +102,50 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
 
   startRecording(): void {
     this.connect();
-    if (!this.serverResponseTimeout) {
+
+    if (!this.recordingResponseTimeout) {
       this.setStatusMessage('Pausing stream and waiting for response...');
-      this.waitForServerResponse(this.recording);
+      this.waitForRecordingResponse();
       this.togglePause();
 
-      const startRecordingObservable = this.socketService.startRecording().subscribe(() => {
+      // start recording also listens for response, unsubscribe after first response
+      const startRecordingObservable = this.socketService.startRecording().subscribe((response: any) => {
         this.togglePause();
-        this.clearWaitForServerResponse();
-        startRecordingObservable.unsubscribe()
-      });
+        this.clearRecordingResponse();
+        this.setStatusMessage('Parsing response...')
+
+        if (response['data']) {
+          this.recording = true;
+          this.setStatusMessage(response['data']);
+          startRecordingObservable.unsubscribe();
+        }
+
+        else {
+          this.recording = false;
+          this.setErrorMessage(response['error']);
+          startRecordingObservable.unsubscribe();
+        }
+      })
     }
   }
 
   observeRecording(): void {
+
     if (this.recordingObservable) {
       return
     }
 
-    let lastValue = this.timeRecordingSeconds;
-    this.recordingResponseTimeout = setInterval(() => {
-      if (this.timeRecordingSeconds === lastValue) {
-        this.recording = false;
-        this.clearRecordingResponse();
-        this.setStatusMessage(undefined);
-        this.recordingObservable = undefined;
-      } else {
-        lastValue = this.timeRecordingSeconds;
-      }
-    }, 2000)
-
     this.recordingObservable = this.socketService.listenForRecording().subscribe((response: any) => {
       if (response['data']) {
-        if (!this.statusMessage || !this.serverResponseTimeout) {
+        this.recording = true;
+        if (!this.serverResponseTimeout) {
           this.setStatusMessage(response['data']);
         }
-        this.recording = true;
-        this.timeRecordingSeconds++;
       }
 
-      else if (response['error']) {
+      else {
         this.recording = false;
-        if (this.serverResponseTimeout) {
-          this.setErrorMessage(response['error']);
-        }
+        this.setStatusMessage(undefined);
       }
     });
   }
@@ -152,6 +155,16 @@ export class LiveCameraComponent implements OnInit, OnDestroy {
       if (!condition) {
         this.setErrorMessage('Response timed out, try again later')
         this.clearWaitForServerResponse();
+      }
+    }, SERVER_TIMEOUT_RESPONSE_MS);
+  }
+
+  waitForRecordingResponse(): void {
+    this.recordingResponseTimeout = setInterval(() => {
+      if (!this.recording) {
+        this.setErrorMessage('Failed to start recording, try again later')
+        this.clearRecordingResponse();
+        this.togglePause();
       }
     }, SERVER_TIMEOUT_RESPONSE_MS);
   }
