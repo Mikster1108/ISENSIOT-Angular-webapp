@@ -8,7 +8,6 @@ import { RecordingsComponent } from './recordings/recordings.component';
 import { LiveCameraComponent } from './live-camera/live-camera.component';
 import { LoginComponent } from './login/login.component';
 import {FormsModule} from "@angular/forms";
-import { ProfileComponent } from './profile/profile.component';
 import { RegisterComponent } from './register/register.component';
 import { ContentComponent } from './content/content.component';
 import { VideoComponent } from "./recordings/video/video-component";
@@ -30,7 +29,6 @@ import { RecordingComponent } from './recordings/recording/recording.component';
     RecordingsComponent,
     LiveCameraComponent,
     LoginComponent,
-    ProfileComponent,
     RegisterComponent,
     ContentComponent,
     VideoComponent,
