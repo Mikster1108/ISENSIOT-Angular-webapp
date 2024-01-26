@@ -26,6 +26,16 @@ export class SocketService {
     return this.socket.fromEvent('start_stream_response');
   }
 
+  startRecording(): Observable<any> {
+    this.socket.emit('start-recording');
+
+    return this.listenForRecording();
+  }
+
+  listenForRecording(): Observable<any> {
+    return this.socket.fromEvent('start_recording_response');
+  }
+
   getFrame(): Observable<any> {
     return new Observable((observer) => {
       this.socket.on('frame', (data: any) => {
