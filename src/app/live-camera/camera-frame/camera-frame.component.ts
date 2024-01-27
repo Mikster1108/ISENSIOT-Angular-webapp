@@ -29,7 +29,7 @@ export class CameraFrameComponent implements OnInit {
   public watchFrameData(): void {
     this.frameDataSubscriber = this.socketService.getFrame().subscribe((data) => {
       if (this.initPhase) {
-        this.emitStatusMessage('');
+        this.emitStatusMessage(undefined);
         this.startObservingFrameData();
         this.initPhase = false;
       }
