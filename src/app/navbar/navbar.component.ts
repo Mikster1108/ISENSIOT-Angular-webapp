@@ -25,11 +25,7 @@ export class NavbarComponent implements OnInit {
     {
       display: 'Live Camera',
       path: '/live-camera'
-    },
-    {
-      display: 'Profile',
-      path: '/profile'
-    },
+    }
   ];
 
   ngOnInit(): void {
