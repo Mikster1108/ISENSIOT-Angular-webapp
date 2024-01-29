@@ -1,0 +1,52 @@
+<header *ngIf="loggedIn" class="bg-gray-800">
+
+  <!-- desktop navbar-->
+  <section class="hidden md:flex mx-auto py-4 px-4 container">
+    <nav class="flex flex-wrap flex-grow justify-center my-auto">
+      <a
+      *ngFor="let navItem of navItems; let i = index"
+      routerLink="{{ navItem.path }}"
+      class="mx-6 font-bold text-white hover:text-gray-500 transition text-lg"
+      [routerLinkActive]="['active']"
+      >{{ navItem.display }}</a>
+      <a class="mx-6 font-bold text-white hover:text-gray-500 transition text-lg cursor-pointer" (click)="logout()">
+      Logout
+      </a>
+    </nav>
+  </section>
+
+  <section class="md:hidden">
+    <div class="bg-gray-800 p-4 flex w-full justify-end justify-items-stretch">
+    <!-- Hamburger Icon -->
+      <button class="text-white focus:outline-none" (click)="expand = !expand">
+        <svg class="h-6 w-6"
+         fill="none"
+         stroke="currentColor"
+         viewBox="0 0 24 24"
+         xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 6h16M4 12h16m-7 6h7"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div *ngIf="expand" class="md:flex md:items-center w-1/2 -mt-12">
+      <nav>
+        <ul class="flex pb-2 flex-col md:flex-row list-none md:ml-auto">
+          <a
+          *ngFor="let navItem of navItems; let i = index"
+          routerLink="{{ navItem.path }}"
+          class="flex px-4 py-2 font-bold text-white justify-self-center transition hover:text-gray-500 transition"
+          [routerLinkActive]="['active']"
+          >
+          {{ navItem.display }}
+          </a>
+          <a class="flex px-4 py-2 font-bold text-white justify-self-center transition hover:text-gray-500 transition" (click)="logout()">
+          Logout
+          </a>
+        </ul>
+      </nav>
+    </div>
+  </section>
+</header>

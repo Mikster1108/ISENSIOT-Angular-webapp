@@ -1,0 +1,90 @@
+<div class="flex h-screen">
+  <div class="flex flex-col sm:justify-center items-center w-full pt-6 sm:pt-0 m-auto">
+
+    <div class="w-full sm:max-w-md mt-6 px-6 py-4 shadow-lg overflow-hidden sm:rounded-lg bg-gray-700">
+      <form
+          *ngIf="!isLoggedIn"
+          name="form"
+          (ngSubmit)="f.form.valid && onSubmit()"
+          #f="ngForm"
+          novalidate
+      >
+
+        <!-- Email Address -->
+        <div>
+          <label for="email" class="block font-medium text-sm text-gray-200">Email</label>
+
+          <input id="email"
+                 class="block mt-1 w-full p-1 rounded-md focus:ring-0 bg-gray-200 shadow-sm text-gray-900"
+                 type="email"
+                 name="email"
+                 (ngModelChange)="resetErrorStatusCode()"
+                 [(ngModel)]="form.email"
+                 [required]="true"
+                 #email="ngModel">
+          <div
+              class="text-red-400 p-2"
+              *ngIf="email.errors && f.submitted">
+            Please enter a valid email
+          </div>
+
+        </div>
+
+        <!-- Password -->
+        <div class="mt-4">
+          <div class="flex">
+            <label for="password" class="block font-medium text-sm text-gray-200">Password</label>
+
+          </div>
+
+          <input id="password"
+                 class="block mt-1 w-full p-1 rounded-md focus:ring-0 bg-gray-200 shadow-sm text-gray-900"
+                 type="password"
+                 name="password"
+                 (ngModelChange)="resetErrorStatusCode()"
+                 [(ngModel)]="form.password"
+                 [required]="true"
+                 #password="ngModel">
+          <div
+              class="text-red-400 p-2"
+              *ngIf="password.errors && f.submitted">
+            <div *ngIf="password.errors['required']">A password is required</div>
+          </div>
+        </div>
+
+        <!-- Register -->
+        <div class="flex mt-4">
+          <a class="text-sm text-gray-100 hover:text-gray-400 transition duration-150 ease-in-out my-auto underline"
+             href="register">
+            Geen account?
+          </a>
+
+          <button
+              class="ml-auto inline-flex items-center px-4 py-2 border bg-gray-600 rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-800 transition ease-in-out duration-150">
+            LOGIN
+          </button>
+        </div>
+        <div class="text-red-400 p-2" *ngIf="f.submitted && errorStatusCode; else serverErrorBlock">
+          <div *ngIf="errorStatusCode === 400">
+            <app-error-display [errorMessage]="'Invalid password'"></app-error-display>
+          </div>
+          <div *ngIf="errorStatusCode === 401">
+            <app-error-display [errorMessage]="'Invalid credentials'"></app-error-display>
+          </div>
+          <div *ngIf="errorStatusCode === 404">
+            <app-error-display [errorMessage]="'No user with that email exists'"></app-error-display>
+          </div>
+          <div *ngIf="errorStatusCode === 429">
+            <app-error-display [errorMessage]="'Too many attempts, try again later'"></app-error-display>
+          </div>
+        </div>
+        <ng-template #serverErrorBlock>
+          <div *ngIf="errorStatusCode === 0">
+            <app-error-display [errorMessage]="'Server is not responding'"></app-error-display>
+          </div>
+        </ng-template>
+      </form>
+    </div>
+  </div>
+</div>
+
